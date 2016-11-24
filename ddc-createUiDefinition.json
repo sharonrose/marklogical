@@ -1,0 +1,434 @@
+{
+    "handler": "Microsoft.Compute.MultiVm",
+    "version": "0.0.1-preview",
+    "parameters": {
+        "basics": [
+            {
+                "name": "adminUsername",
+                "type": "Microsoft.Compute.UserNameTextBox",
+                "label": "OS Admin User Name",
+                "defaultValue": "ucpadmin",
+                "toolTip": "The name of the admin user for initial SSH access to Docker Datacenter Controller, Compute, and DTR Nodes.",
+                "constraints": {
+                    "required": true
+                },
+                "osPlatform": "Linux"
+            },
+            {
+                "name": "adminPassword",
+                "type": "Microsoft.Compute.CredentialsCombo",
+                "label": {
+                    "authenticationType": "Authentication Type",
+                    "password": "OS Admin User Password",
+                    "confirmPassword": "Confirm OS Admin Password",
+                    "sshPublicKey": "SSH Public Key for admin User"
+                },
+                "toolTip": {
+                    "authenticationType": "Authentication Type for the admin user",
+                    "password": "OS Admin User Password",
+                    "sshPublicKey": "SSH Public Key for the Admin User"
+                },
+                "constraints": {
+                    "required": true
+                },
+                "options": {
+                    "hideConfirmation": false
+                },
+                "osPlatform": "Linux"
+            }
+        ],
+        "steps": [
+            {
+                "name": "dockerDatacenterSettings",
+                "label": "Docker Datacenter Settings",
+                "subLabel": {
+                    "preValidation": "Configure cluster",
+                    "postValidation": "Done"
+                },
+                "bladeTitle": "Docker Datacenter Settings",
+                "elements": [
+                    {
+                        "name": "clusterPrefix",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "UCP Cluster Name Prefix",
+                        "defaultValue": "ucpclus",
+                        "toolTip": "The Prefix for the name of the UCP Nodes. Must be between 1 and 8 characters.",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[a-z0-9A-Z]{1,8}$",
+                            "validationMessage": "Only alphanumeric characters are allowed, and the value must be 1-8 characters long."
+                        }
+                    },
+                    {
+                        "name": "ucpControllerSize",
+                        "type": "Microsoft.Compute.SizeSelector",
+                        "label": "UCP controller VM size",
+                        "defaultValue": "Standard_DS2_v2",
+                        "toolTip": "The size of Controller nodes to deploy. Use smaller sizes for POC and larger sizes for Production.",
+                        "recommendedSizes": [
+                            "Standard_DS2_v2",
+                            "Standard_DS3_v2",
+                            "Standard_DS12_v2"
+                        ],
+                        "constraints": {
+                            "allowedSizes": [
+                                "Standard_DS1",
+                                "Standard_DS2",
+                                "Standard_DS3",
+                                "Standard_DS11",
+                                "Standard_DS12",
+                                "Standard_DS13",
+                                "Standard_DS14",
+                                "Standard_DS1_v2",
+                                "Standard_DS2_v2",
+                                "Standard_DS3_v2",
+                                "Standard_DS4_v2",
+                                "Standard_DS5_v2",
+                                "Standard_DS11_v2",
+                                "Standard_DS12_v2",
+                                "Standard_DS13_v2",
+                                "Standard_DS14_v2"
+                            ]
+                        },
+                        "osPlatform": "Linux",
+                        "count": "[steps('dockerDatacenterSettings').ucpControllerCount]"
+                    },
+                    {
+                        "name": "ucpControllerCount",
+                        "type": "Microsoft.Common.DropDown",
+                        "label": "Number of UCP Controller Nodes",
+                        "defaultValue": "3",
+                        "toolTip": "The number of UCP Controller nodes to provision. The minimum is 3 and the maximum is 5.",
+                        "constraints": {
+                            "allowedValues": [
+                                {
+                                    "label": "3",
+                                    "value": 3
+                                },
+                                {
+                                    "label": "5",
+                                    "value": 5
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ucpNodeSize",
+                        "type": "Microsoft.Compute.SizeSelector",
+                        "label": "UCP node VM size",
+                        "defaultValue": "Standard_DS2_v2",
+                        "toolTip": "The size of UCP nodes to deploy. Use smaller sizes for POC and larger sizes for Production.",
+                        "recommendedSizes": [
+                            "Standard_DS2_v2",
+                            "Standard_DS3_v2",
+                            "Standard_DS12_v2"
+                        ],
+                        "constraints": {
+                            "allowedSizes": [
+                                "Standard_DS1",
+                                "Standard_DS2",
+                                "Standard_DS3",
+                                "Standard_DS11",
+                                "Standard_DS12",
+                                "Standard_DS13",
+                                "Standard_DS14",
+                                "Standard_DS1_v2",
+                                "Standard_DS2_v2",
+                                "Standard_DS3_v2",
+                                "Standard_DS4_v2",
+                                "Standard_DS5_v2",
+                                "Standard_DS11_v2",
+                                "Standard_DS12_v2",
+                                "Standard_DS13_v2",
+                                "Standard_DS14_v2"
+                            ]
+                        },
+                        "osPlatform": "Linux",
+                        "count": "[steps('dockerDatacenterSettings').ucpNodeCount]"
+                    },
+                    {
+                        "name": "ucpNodeCount",
+                        "type": "Microsoft.Common.DropDown",
+                        "label": "Number of UCP Nodes",
+                        "defaultValue": "2",
+                        "toolTip": "The number of UCP nodes to provision. The minimum is 2 and the maximum is 10.",
+                        "constraints": {
+                            "allowedValues": [
+                                {
+                                    "label": "2",
+                                    "value": 2
+                                },
+                                {
+                                    "label": "3",
+                                    "value": 3
+                                },
+                                {
+                                    "label": "4",
+                                    "value": 4
+                                },
+                                {
+                                    "label": "5",
+                                    "value": 5
+                                },
+                                {
+                                    "label": "6",
+                                    "value": 6
+                                },
+                                {
+                                    "label": "7",
+                                    "value": 7
+                                },
+                                {
+                                    "label": "8",
+                                    "value": 8
+                                },
+                                {
+                                    "label": "9",
+                                    "value": 9
+                                },
+                                {
+                                    "label": "10",
+                                    "value": 10
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ucpDtrNodeSize",
+                        "type": "Microsoft.Compute.SizeSelector",
+                        "label": "DTR VM size",
+                        "defaultValue": "Standard_DS2_v2",
+                        "toolTip": "The size of DTR nodes to deploy. Use smaller sizes for POC and larger sizes for Production.",
+                        "recommendedSizes": [
+                            "Standard_DS2_v2",
+                            "Standard_DS3_v2",
+                            "Standard_DS12_v2"
+                        ],
+                        "constraints": {
+                            "allowedSizes": [
+                                "Standard_DS1",
+                                "Standard_DS2",
+                                "Standard_DS3",
+                                "Standard_DS11",
+                                "Standard_DS12",
+                                "Standard_DS13",
+                                "Standard_DS14",
+                                "Standard_DS1_v2",
+                                "Standard_DS2_v2",
+                                "Standard_DS3_v2",
+                                "Standard_DS4_v2",
+                                "Standard_DS5_v2",
+                                "Standard_DS11_v2",
+                                "Standard_DS12_v2",
+                                "Standard_DS13_v2",
+                                "Standard_DS14_v2"
+                            ]
+                        },
+                        "osPlatform": "Linux",
+                        "count": "[steps('dockerDatacenterSettings').ucpDtrNodeCount]"
+                    },
+                    {
+                        "name": "ucpDtrNodeCount",
+                        "type": "Microsoft.Common.DropDown",
+                        "label": "Number of DTR Nodes",
+                        "defaultValue": "3",
+                        "toolTip": "The number of DTR nodes to provision. The minimum is 3 and the maximum is 5.",
+                        "constraints": {
+                            "allowedValues": [
+                                {
+                                    "label": "3",
+                                    "value": 3
+                                },
+                                {
+                                    "label": "5",
+                                    "value": 5
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "virtualNetwork",
+                        "type": "Microsoft.Network.VirtualNetworkCombo",
+                        "label": {
+                            "virtualNetwork": "Virtual network",
+                            "subnets": "Subnet"
+                        },
+                        "toolTip": {
+                            "virtualNetwork": "Virtual Network Name. The address prefix should be in format x.x.x.x/y (ie. 10.2.0.0/16)",
+                            "subnets": "Subnet required for the UCP Controllers, DTR and UCP Nodes"
+                        },
+                        "defaultValue": {
+                            "addressPrefixSize": "/16",
+                            "name": "ucpvnet"
+                        },
+                        "constraints": {
+                            "minAddressPrefixSize": "/16"
+                        },
+                        "options": {
+                            "hideExisting": true
+                        },
+                        "subnets": {
+                            "subnet1": {
+                                "label": "UCP Controller Subnet",
+                                "defaultValue": {
+                                    "name": "ucp-controller-subnet",
+                                    "addressPrefixSize": "/24"
+                                },
+                                "constraints": {
+                                    "minAddressPrefixSize": "/24",
+                                    "minAddressCount": 16,
+                                    "requireContiguousAddresses": false
+                                }
+                            },
+                            "subnet2": {
+                                "label": "UCP Node and DTR Node Subnet",
+                                "defaultValue": {
+                                    "name": "ucp-node-subnet",
+                                    "addressPrefixSize": "/24"
+                                },
+                                "constraints": {
+                                    "minAddressPrefixSize": "/24",
+                                    "minAddressCount": 16,
+                                    "requireContiguousAddresses": false
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "controllerLbPublicIpAddress",
+                        "type": "Microsoft.Network.PublicIpAddressCombo",
+                        "label": {
+                            "publicIpAddress": "Name of IP address for Controller load balancer",
+                            "domainNameLabel": "DNS label for Controller load balancer"
+                        },
+                        "toolTip": {
+                            "domainNameLabel": "DNS label for the Controller load balancer public IP address. This must be unique within the datacenter."
+                        },
+                        "defaultValue": {
+                            "publicIpAddressName": "clbpip",
+                            "domainNameLabel": "clbpiplabel"
+                        },
+                        "options": {
+                            "hideNone": true,
+                            "hideExisting": true
+                        },
+                        "constraints": {
+                            "required": {
+                                "domainNameLabel": true
+                            }
+                        }
+                    },
+                    {
+                        "name": "nodeLbPublicIpAddress",
+                        "type": "Microsoft.Network.PublicIpAddressCombo",
+                        "label": {
+                            "publicIpAddress": "Name of IP address for Node load balancer",
+                            "domainNameLabel": "DNS label for Node load balancer"
+                        },
+                        "toolTip": {
+                            "domainNameLabel": "DNS label for the Node load balancer public IP address. This must be unique within the datacenter."
+                        },
+                        "defaultValue": {
+                            "publicIpAddressName": "nlbpip",
+                            "domainNameLabel": "nlbpiplabel"
+                        },
+                        "options": {
+                            "hideNone": true,
+                            "hideExisting": true
+                        },
+                        "constraints": {
+                            "required": {
+                                "domainNameLabel": true
+                            }
+                        }
+                    },
+                    {
+                        "name": "nodeDtrLbPublicIpAddress",
+                        "type": "Microsoft.Network.PublicIpAddressCombo",
+                        "label": {
+                            "publicIpAddress": "Name of IP address for DTR Node load balancer",
+                            "domainNameLabel": "DNS label for DTR Node load balancer"
+                        },
+                        "toolTip": {
+                            "domainNameLabel": "DNS label for the DTR Node load balancer public IP address. This must be unique within the datacenter."
+                        },
+                        "defaultValue": {
+                            "publicIpAddressName": "dlbpip",
+                            "domainNameLabel": "dlbpiplabel"
+                        },
+                        "options": {
+                            "hideNone": true,
+                            "hideExisting": true
+                        },
+                        "constraints": {
+                            "required": {
+                                "domainNameLabel": true
+                            }
+                        }
+                    },
+                    {
+                        "name": "ucpAdminPassword",
+                        "type": "Microsoft.Common.PasswordBox",
+                        "label": {
+                            "password": "UCP Admin Password",
+                            "confirmPassword": "Confirm UCP admin password"
+                        },
+                        "toolTip": {
+                            "password": "Password for UCP admin"
+                        },
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[=!@#$%&<>_.+a-zA-Z0-9-]{2,35}$",
+                            "validationMessage": "The admin password must be between 2 and 35 characters and can contain any combination of alphanumeric or the following special characters !#$%&-_+=<>"
+                        }
+                    },
+                    {
+                        "name": "ucpLicenseKey",
+                        "type": "Microsoft.Common.FileUpload",
+                        "label": "Upload your Docker Datacenter License Key",
+                        "toolTip": "Please upload your Docker Datacenter License Key File. You can retrieve your license key from Docker Hub (https://hub.docker.com/).",
+                        "constraints": {
+                            "required": true,
+                            "validationMessage": "You must upload your Docker Datacenter License File. This can be a trial key or fully licensed key that you retrieve from Docker Hub."
+                        },
+                        "options": {
+                            "multiple": false,
+                            "uploadMode": "url",
+                            "openMode": "text",
+                            "encoding": "UTF-8"
+                        },
+                        "visible": true
+                    }
+                ]
+            }
+        ],
+        "outputs": {
+            "location": "[location()]",
+            "adminUsername": "[basics('adminUsername')]",
+            "adminPassword": "[basics('adminPassword').password]",
+            "authenticationType": "[basics('adminPassword').authenticationType]",
+            "sshPublicKey": "[basics('adminPassword').sshPublicKey]",
+            "clusterPrefix": "[steps('dockerDatacenterSettings').clusterPrefix]",
+            "ucpControllerSize": "[steps('dockerDatacenterSettings').ucpControllerSize]",
+            "ucpControllerCount": "[steps('dockerDatacenterSettings').ucpControllerCount]",
+            "ucpNodeSize": "[steps('dockerDatacenterSettings').ucpNodeSize]",
+            "ucpNodeCount": "[steps('dockerDatacenterSettings').ucpNodeCount]",
+            "ucpDtrNodeSize": "[steps('dockerDatacenterSettings').ucpDtrNodeSize]",
+            "ucpDtrNodeCount": "[steps('dockerDatacenterSettings').ucpDtrNodeCount]",
+            "virtualNetworkName": "[steps('dockerDatacenterSettings').virtualNetwork.name]",
+            "virtualNetworkAddressPrefix": "[steps('dockerDatacenterSettings').virtualNetwork.addressPrefix]",
+            "controllerSubnetName": "[steps('dockerDatacenterSettings').virtualNetwork.subnets.subnet1.name]",
+            "controllerSubnetPrefix": "[steps('dockerDatacenterSettings').virtualNetwork.subnets.subnet1.addressPrefix]",
+            "nodeSubnetName": "[steps('dockerDatacenterSettings').virtualNetwork.subnets.subnet2.name]",
+            "nodeSubnetPrefix": "[steps('dockerDatacenterSettings').virtualNetwork.subnets.subnet2.addressPrefix]",
+            "controllerLbPublicIpAddress": "[steps('dockerDatacenterSettings').controllerLbPublicIpAddress.name]",
+            "controllerLbPublicIpDnsName": "[steps('dockerDatacenterSettings').controllerLbPublicIpAddress.domainNameLabel]",
+            "nodeLbPublicIpAddress": "[steps('dockerDatacenterSettings').nodeLbPublicIpAddress.name]",
+            "nodeLbPublicIpDnsName": "[steps('dockerDatacenterSettings').nodeLbPublicIpAddress.domainNameLabel]",
+            "nodeDtrLbPublicIpAddress": "[steps('dockerDatacenterSettings').nodeDtrLbPublicIpAddress.name]",
+            "nodeDtrLbPublicIpDnsName": "[steps('dockerDatacenterSettings').nodeDtrLbPublicIpAddress.domainNameLabel]",
+            "ucpAdminPassword": "[steps('dockerDatacenterSettings').ucpAdminPassword]",
+            "ucpLicenseKey": "[steps('dockerDatacenterSettings').ucpLicenseKey]"
+        }
+    }
+}
